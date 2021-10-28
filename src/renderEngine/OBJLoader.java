@@ -34,7 +34,6 @@ public class OBJLoader {
         try {
             while (true){
                 line = reader.readLine();
-                System.out.println(line);
                 String[] currentLine = line.split(" ");
                 if(line.startsWith("v ")){
                     Vector3f vertex = new Vector3f(Float.parseFloat(currentLine[1]),Float.parseFloat(currentLine[2]),Float.parseFloat(currentLine[3]));
@@ -63,11 +62,14 @@ public class OBJLoader {
                 String[] vertex2 = currentline[2].split("/");
                 String[] vertex3 = currentline[3].split("/");
 
+
+
+
                 processVertex(vertex1,indices,textures,normals,texturesArray,normalsArray);
                 processVertex(vertex2,indices,textures,normals,texturesArray,normalsArray);
                 processVertex(vertex3,indices,textures,normals,texturesArray,normalsArray);
                 line = reader.readLine();
-                System.out.println(line);
+
             }
             reader.close();
         }catch (Exception e){
@@ -86,7 +88,7 @@ public class OBJLoader {
             indicesArray[i] = indices.get(i);
 
         }
-        return  loader.loadToVAO(verticesArray,texturesArray,indicesArray);
+        return  loader.loadToVAO(verticesArray,texturesArray,normalsArray,indicesArray);
     }
 
     private static void processVertex(String[] vertexData, List<Integer> indices , List<Vector2f> textures, List<Vector3f> normals, float[] texturesArray, float[] normalsArray){

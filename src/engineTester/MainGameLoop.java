@@ -2,46 +2,54 @@ package engineTester;
 
 import entities.Camera;
 import entities.Entity;
+import entities.Light;
 import models.TexturedModel;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
-import renderEngine.DisplayManager;
-import renderEngine.Loader;
+import renderEngine.*;
 import models.RawModel;
-import renderEngine.OBJLoader;
-import renderEngine.Renderer;
 import shaders.StaticShader;
+import terrains.Tarrain;
 import textures.ModelTexture;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class MainGameLoop {
     public static void main(String[] args) {
         DisplayManager.craeateDisplay();
 
         Loader loader = new Loader();
-        StaticShader staticShader = new StaticShader();
-        Renderer renderer = new Renderer(staticShader);
 
-        RawModel model = OBJLoader.loadObjModel("stall",loader);
+        Tarrain tarrain = new Tarrain(0,0,loader,new ModelTexture(loader.loadTexture("stone")));
 
-        ModelTexture texture = new ModelTexture(loader.loadTexture("stallTexture"));
+        RawModel model3 = OBJLoader.loadObjModel("stall",loader);
 
-        TexturedModel texturedModel = new TexturedModel(model,texture);
+        TexturedModel treemodel2 = new TexturedModel(model3,new ModelTexture(loader.loadTexture("grass")));
 
-        Entity entity = new Entity(texturedModel,new Vector3f(0 ,0,0),0,0,0,1);
 
-        Camera camera = new Camera();
+        List<Entity> entitys = new ArrayList<Entity>();
+
+
+
+        Light light = new Light(new Vector3f(40 ,20,40),new Vector3f(1,1,1));
+
+        Camera camera = new Camera(new Vector3f(40 ,1,40),0,0,0);
+        MasterRenderer renderer = new MasterRenderer(loader);
 
         while (!Display.isCloseRequested()){
-            entity.increaseRotation(0,0.01f,0);
+
             camera.move();
-            renderer.prepare();
-            staticShader.start();
-            staticShader.loadViewMatrix(camera);
-            renderer.render(entity,staticShader);
-            staticShader.stop();
+            for(Entity entity : entitys){
+
+                renderer.processEntity(entity);
+            }
+            renderer.processTerrain(tarrain);
+            renderer.render(light,camera);
             DisplayManager.updateDisplay();
         }
-        staticShader.cleanUp();
+        renderer.cleanUp();
         loader.cleanUp();
         DisplayManager.closeDisplay();
     }
